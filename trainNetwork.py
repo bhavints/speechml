@@ -30,8 +30,8 @@ trackList = []
 paths = ["csvs", "mfccs"]
 sequence_length = 30
 	
-for root, dirs, files in chain.from_iterable(sorted(os.walk(path)) for path in paths):
-	for file in files:
+for root, dirs, files in chain.from_iterable(os.walk(path) for path in paths):
+	for file in sorted(files):
 		if (file.endswith(".npy")):
 			path = os.path.join(root, file)
 			if (root == "csvs") :
