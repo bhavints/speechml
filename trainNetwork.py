@@ -43,7 +43,8 @@ for root, dirs, files in chain.from_iterable(os.walk(path) for path in paths):
 						
 input_first = (Input(shape=(sequence_length, 13), name='mfccInput'))
 input_next = CuDNNLSTM(13, input_shape=(sequence_length, 13), return_sequences=True, name="LSTM_aggregation")(input_first)
-input_next = CuDNNLSTM(13, input_shape=(sequence_length, 13), return_sequences=False, name="LSTM_aggregation2")(input_next)
+input_next = CuDNNLSTM(13, input_shape=(sequence_length, 13), return_sequences=True, name="LSTM_aggregation2")(input_next)
+input_next = CuDNNLSTM(13, input_shape=(sequence_length, 13), return_sequences=False, name="LSTM_aggregation3")(input_next)
 predictions = (Dense(6, activation="linear", name="predictions", input_shape=(13,)))(input_next)
 
 # Use the Adam method for training the network.
@@ -62,15 +63,19 @@ pmodel.compile(optimizer=optimizer,
 			  metrics=['mse'])
 			  
 scaler = MinMaxScaler(feature_range=(0.0, 1.0))
-fitter = StandardScaler()			  
+fitter = StandardScaler()
+			  
 for mfcc, track in zip(mfccsList, trackList):
 	mfccs = np.transpose(np.load(mfcc))
 	sixDistances = np.load(track)
 	fitter.partial_fit(mfccs)
 	scaler.partial_fit(sixDistances)
 
-joblib.dump(fitter, 'StandardScaler.pkl') 
-joblib.dump(scaler, 'MinMaxScaler.pkl') 
+homepath = os.environ["HOME"]
+path_stdscaler = '{}/10_10_StandardScaler.pkl'.format(homepath)
+path_mmscaler = '{}/10_10_MinMaxScaler.pkl'.format(homepath)
+joblib.dump(fitter, path_stdscaler) 
+joblib.dump(scaler, path_mmscaler) 
 
 counter = 0	
 for mfcc, track in zip(mfccsList, trackList):
@@ -98,19 +103,19 @@ for mfcc, track in zip(mfccsList, trackList):
 
 	if (counter < 9):
 		index = np.shape(real_sixDistances_array)[0]
-		crossValidation = index-500
-		testingSet = index-300
+		crossValidation = index-1000
+		testingSet = index
 
 		validation_data = (real_mfcc_array[crossValidation:testingSet], real_sixDistances_array[crossValidation:testingSet])
 		print(real_mfcc_array[crossValidation:testingSet])
 		history = pmodel.fit(x=real_mfcc_array[0:crossValidation],
 							y=real_sixDistances_array[0:crossValidation],
-							epochs=10000,
-							batch_size=512,
+							epochs=20000,
+							batch_size=2048,
 							validation_data=validation_data)
 		
-		homepath = os.environ["HOME"]
-		path_best_model = '{}/10_09_LSTM_Regression_Model_SAIL_SPEECH.keras'.format(homepath)
+
+		path_best_model = '{}/10_10_LSTM_Regression_Model_SAIL_SPEECH.keras'.format(homepath)
 		model.save(path_best_model)
 		
 	counter += 1

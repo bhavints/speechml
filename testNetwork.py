@@ -3,6 +3,7 @@ import pandas as panda
 import os
 import tensorflow as tf
 import numpy as np
+from numpy import mean, sqrt, square
 import random
 import matplotlib.pyplot as plt
 from numbers import Number
@@ -50,7 +51,7 @@ predictions = TimeDistributed(Dense(6, activation="linear", name="predictions", 
 # We want to find the best learning-rate for the Adam method.
 optimizer = Adam(lr=1e-3)
 # model = Model(inputs=[input_first], outputs=predictions)    
-model = load_model("10_09_LSTM_Regression_Model_SAIL_SPEECH.keras")
+model = load_model("10_10_LSTM_Regression_Model_SAIL_SPEECH.keras")
 # In Keras we need to compile the model so it can be trained.
 model.compile(optimizer=optimizer,
 			  loss='mean_squared_error',
@@ -58,8 +59,8 @@ model.compile(optimizer=optimizer,
 
 			  
 			  
-mfcc = mfccsList[10]
-track = trackList[10]
+mfcc = mfccsList[5]
+track = trackList[5]
 print(mfcc)
 print(track)
 mfccs = np.transpose(np.load(mfcc))
@@ -87,7 +88,22 @@ real_sixDistances_array = np.asarray(sixDistances_array, dtype=np.float32)
 
 index = np.shape(real_sixDistances_array)[0]
 
+# Make predictions, scale them, and convert to mm along with ground truth
 score = model.predict(x=real_mfcc_array)
+#score = scaler.inverse_transform(score)
+#score *= 2.4
+#real_sixDistances_array *= 2.4
+
+sumErrors = np.zeros(shape=(1, 6));
+for i in range(len(score)):
+	for j in range(6):
+		sumErrors[0][j] += square(score[i][j] - real_sixDistances_array[i][j])
+
+for k in range(6):
+	sumErrors[0][k] /= len(score)
+	sumErrors[0][k] = sqrt(sumErrors[0][k])
+	print('error {}: {}'.format(k, sumErrors[0][k]))
+	
 #print(score[0][29])
 plt.plot(score[:,0])
 plt.plot(real_sixDistances_array[:,0])
