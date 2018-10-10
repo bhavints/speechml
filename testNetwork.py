@@ -5,6 +5,8 @@ import tensorflow as tf
 import numpy as np
 from numpy import mean, sqrt, square
 import random
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from numbers import Number
 from sklearn.externals import joblib 
