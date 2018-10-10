@@ -30,7 +30,7 @@ trackList = []
 paths = ["csvs", "mfccs"]
 sequence_length = 30
 	
-for root, dirs, files in chain.from_iterable(os.walk(path) for path in paths):
+for root, dirs, files in chain.from_iterable(sorted(os.walk(path)) for path in paths):
 	for file in files:
 		if (file.endswith(".npy")):
 			path = os.path.join(root, file)
@@ -91,6 +91,7 @@ for mfcc, track in zip(mfccsList, trackList):
 		sample_mfcc = mfccs[i-sequence_length:i]
 		sample_sixDistances = sixDistances[i]
 		mfcc_array.append(sample_mfcc)
+		print(sample_mfcc)
 		sixDistances_array.append(sample_sixDistances)
 
 	real_mfcc_array = np.asarray(mfcc_array, dtype=np.float32)
