@@ -107,7 +107,7 @@ for mfcc, track in zip(mfccsList, trackList):
 		history = pmodel.fit(x=real_mfcc_array[0:crossValidation],
 							y=real_sixDistances_array[0:crossValidation],
 							epochs=500,
-							batch_size=40,
+							batch_size=512,
 							validation_data=validation_data)
 							
 		model.save("10_09_LSTM_Regression_Model_retest.keras")
