@@ -109,8 +109,10 @@ for mfcc, track in zip(mfccsList, trackList):
 							epochs=500,
 							batch_size=512,
 							validation_data=validation_data)
-							
-		model.save("10_09_LSTM_Regression_Model_retest.keras")
+		
+		homepath = os.environ["HOME"]
+		path_best_model = '{}/10_09_LSTM_Regression_Model_SAIL_SPEECH.keras'.format(homepath)
+		model.save(path_best_model)
 
 	else:
 		score = model.predict(x=real_mfcc_array)
