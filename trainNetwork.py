@@ -91,7 +91,6 @@ for mfcc, track in zip(mfccsList, trackList):
 		sample_mfcc = mfccs[i-sequence_length:i]
 		sample_sixDistances = sixDistances[i]
 		mfcc_array.append(sample_mfcc)
-		print(sample_mfcc)
 		sixDistances_array.append(sample_sixDistances)
 
 	real_mfcc_array = np.asarray(mfcc_array, dtype=np.float32)
@@ -106,7 +105,7 @@ for mfcc, track in zip(mfccsList, trackList):
 		print(real_mfcc_array[crossValidation:testingSet])
 		history = pmodel.fit(x=real_mfcc_array[0:crossValidation],
 							y=real_sixDistances_array[0:crossValidation],
-							epochs=500,
+							epochs=10000,
 							batch_size=512,
 							validation_data=validation_data)
 		
