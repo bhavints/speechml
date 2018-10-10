@@ -6,6 +6,7 @@ import numpy as np
 import random
 import matplotlib.pyplot as plt
 from numbers import Number
+from sklearn.externals import joblib 
 
 # For parameter tuning
 import math
@@ -49,7 +50,7 @@ predictions = TimeDistributed(Dense(6, activation="linear", name="predictions", 
 # We want to find the best learning-rate for the Adam method.
 optimizer = Adam(lr=1e-3)
 # model = Model(inputs=[input_first], outputs=predictions)    
-model = load_model("10_02_LSTM_Regression_Model_retest.keras")
+model = load_model("10_09_LSTM_Regression_Model_SAIL_SPEECH.keras")
 # In Keras we need to compile the model so it can be trained.
 model.compile(optimizer=optimizer,
 			  loss='mean_squared_error',
@@ -57,8 +58,8 @@ model.compile(optimizer=optimizer,
 
 			  
 			  
-mfcc = mfccsList[1]
-track = trackList[1]
+mfcc = mfccsList[10]
+track = trackList[10]
 print(mfcc)
 print(track)
 mfccs = np.transpose(np.load(mfcc))
@@ -69,14 +70,15 @@ print(sixDistances.shape)
 mfcc_array = []
 sixDistances_array = []
 
-scaler = MinMaxScaler(feature_range=(0.0, 1.0))
-fitter = StandardScaler()
+fitter = joblib.load('StandardScaler.pkl') 
+scaler = joblib.load('MinMaxScaler.pkl') 
+
 mfccs = fitter.fit_transform(mfccs)
 sixDistances = scaler.fit_transform(sixDistances)
 
 for i in range(30, len(sixDistances)-1):
-	sample_mfcc = mfccs[i-sequence_length:i,:]
-	sample_sixDistances = sixDistances[i-sequence_length:i,:]
+	sample_mfcc = mfccs[i-sequence_length:i]
+	sample_sixDistances = sixDistances[i]
 	mfcc_array.append(sample_mfcc)
 	sixDistances_array.append(sample_sixDistances)
 
@@ -84,13 +86,10 @@ real_mfcc_array = np.asarray(mfcc_array, dtype=np.float32)
 real_sixDistances_array = np.asarray(sixDistances_array, dtype=np.float32)
 
 index = np.shape(real_sixDistances_array)[0]
-crossValidation = index-500
-testingSet = index-300
 
-score = model.predict(x=real_mfcc_array[testingSet:index])
+score = model.predict(x=real_mfcc_array)
 #print(score[0][29])
-for i in range(0, 299, 50):
-	plt.plot([1,2,3,4,5,6], score[i][29])
-	plt.plot([1,2,3,4,5,6], (real_sixDistances_array[i])[29])
-	plt.legend(['Model score', 'Ground Truth'], loc='upper left')
-	plt.show()
+plt.plot(score[:,0])
+plt.plot(real_sixDistances_array[:,0])
+plt.legend(['Model score', 'Ground Truth'], loc='upper left')
+plt.show()
