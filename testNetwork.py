@@ -52,9 +52,10 @@ predictions = (Dense(6, activation="linear", name="predictions", input_shape=(13
 # We want to find the best learning-rate for the Adam method.
 optimizer = Adam(lr=1e-4)
 model = Model(inputs=[input_first], outputs=predictions)   
-
+homepath = os.environ["HOME"]
+path_best_model = '{}/10_10_LSTM_Regression_Model_SAIL_SPEECH.keras'.format(homepath)
 # model = Model(inputs=[input_first], outputs=predictions)    
-model = load_model("10_10_LSTM_Regression_Model_SAIL_SPEECH.keras")
+model = load_model(path_best_model)
 # In Keras we need to compile the model so it can be trained.
 model.compile(optimizer=optimizer,
 			  loss='mean_squared_error',
