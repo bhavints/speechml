@@ -74,29 +74,29 @@ joblib.dump(scaler, 'MinMaxScaler.pkl')
 
 counter = 0	
 for mfcc, track in zip(mfccsList, trackList):
+	print(mfcc)
+	print(track)
+	mfccs = np.transpose(np.load(mfcc))
+	sixDistances = np.load(track)
+	print(len(mfccs))
+	print(sixDistances.shape)
+
+	mfcc_array = []
+	sixDistances_array = []
+	
+	mfccs = fitter.fit_transform(mfccs)
+	sixDistances = scaler.fit_transform(sixDistances)
+	
+	for i in range(30, len(sixDistances)-1):
+		sample_mfcc = mfccs[i-sequence_length:i]
+		sample_sixDistances = sixDistances[i]
+		mfcc_array.append(sample_mfcc)
+		sixDistances_array.append(sample_sixDistances)
+
+	real_mfcc_array = np.asarray(mfcc_array, dtype=np.float32)
+	real_sixDistances_array = np.asarray(sixDistances_array, dtype=np.float32)
+
 	if (counter < 9):
-		print(mfcc)
-		print(track)
-		mfccs = np.transpose(np.load(mfcc))
-		sixDistances = np.load(track)
-		print(len(mfccs))
-		print(sixDistances.shape)
-
-		mfcc_array = []
-		sixDistances_array = []
-		
-		mfccs = fitter.fit_transform(mfccs)
-		sixDistances = scaler.fit_transform(sixDistances)
-		
-		for i in range(30, len(sixDistances)-1):
-			sample_mfcc = mfccs[i-sequence_length:i]
-			sample_sixDistances = sixDistances[i]
-			mfcc_array.append(sample_mfcc)
-			sixDistances_array.append(sample_sixDistances)
-
-		real_mfcc_array = np.asarray(mfcc_array, dtype=np.float32)
-		real_sixDistances_array = np.asarray(sixDistances_array, dtype=np.float32)
-
 		index = np.shape(real_sixDistances_array)[0]
 		crossValidation = index-500
 		testingSet = index-300
