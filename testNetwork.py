@@ -44,12 +44,15 @@ for root, dirs, files in chain.from_iterable(os.walk(path) for path in paths):
 						
 input_first = (Input(shape=(sequence_length, 13), name='mfccInput'))
 input_next = CuDNNLSTM(13, input_shape=(sequence_length, 13), return_sequences=True, name="LSTM_aggregation")(input_first)
-input_next = CuDNNLSTM(6, input_shape=(sequence_length, 13), return_sequences=True, name="LSTM_aggregation2")(input_next)
-predictions = TimeDistributed(Dense(6, activation="linear", name="predictions", input_shape=(sequence_length,6)))(input_next)
+input_next = CuDNNLSTM(13, input_shape=(sequence_length, 13), return_sequences=True, name="LSTM_aggregation2")(input_next)
+input_next = CuDNNLSTM(13, input_shape=(sequence_length, 13), return_sequences=False, name="LSTM_aggregation3")(input_next)
+predictions = (Dense(6, activation="linear", name="predictions", input_shape=(13,)))(input_next)
 
 # Use the Adam method for training the network.
 # We want to find the best learning-rate for the Adam method.
-optimizer = Adam(lr=1e-3)
+optimizer = Adam(lr=1e-4)
+model = Model(inputs=[input_first], outputs=predictions)   
+
 # model = Model(inputs=[input_first], outputs=predictions)    
 model = load_model("10_10_LSTM_Regression_Model_SAIL_SPEECH.keras")
 # In Keras we need to compile the model so it can be trained.
@@ -71,11 +74,11 @@ print(sixDistances.shape)
 mfcc_array = []
 sixDistances_array = []
 
-fitter = joblib.load('StandardScaler.pkl') 
-scaler = joblib.load('MinMaxScaler.pkl') 
+fitter = joblib.load('10_10_StandardScaler.pkl') 
+scaler = joblib.load('10_10_MinMaxScaler.pkl') 
 
 mfccs = fitter.fit_transform(mfccs)
-sixDistances = scaler.fit_transform(sixDistances)
+#sixDistances = scaler.fit_transform(sixDistances)
 
 for i in range(30, len(sixDistances)-1):
 	sample_mfcc = mfccs[i-sequence_length:i]
@@ -90,9 +93,9 @@ index = np.shape(real_sixDistances_array)[0]
 
 # Make predictions, scale them, and convert to mm along with ground truth
 score = model.predict(x=real_mfcc_array)
-#score = scaler.inverse_transform(score)
-#score *= 2.4
-#real_sixDistances_array *= 2.4
+score = scaler.inverse_transform(score)
+score *= 2.4
+real_sixDistances_array *= 2.4
 
 sumErrors = np.zeros(shape=(1, 6));
 for i in range(len(score)):
