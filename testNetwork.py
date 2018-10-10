@@ -32,7 +32,7 @@ paths = ["csvs", "mfccs"]
 sequence_length = 30
 	
 for root, dirs, files in chain.from_iterable(os.walk(path) for path in paths):
-	for file in files:
+	for file in sorted(files):
 		if (file.endswith(".npy")):
 			path = os.path.join(root, file)
 			if (root == "csvs") :
@@ -63,8 +63,8 @@ model.compile(optimizer=optimizer,
 
 			  
 			  
-mfcc = mfccsList[5]
-track = trackList[5]
+mfcc = mfccsList[9]
+track = trackList[9]
 print(mfcc)
 print(track)
 mfccs = np.transpose(np.load(mfcc))
@@ -112,4 +112,4 @@ for k in range(6):
 plt.plot(score[:,0])
 plt.plot(real_sixDistances_array[:,0])
 plt.legend(['Model score', 'Ground Truth'], loc='upper left')
-plt.show()
+plt.savefig("results_track_9_of_10.png")
