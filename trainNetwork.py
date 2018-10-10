@@ -55,7 +55,12 @@ model = Model(inputs=[input_first], outputs=predictions)
 model.compile(optimizer=optimizer,
 			  loss='mean_squared_error',
 			  metrics=['mse'])
-
+			  
+pmodel = multi_gpu_model(model, gpus=4)
+pmodel.compile(optimizer=optimizer,
+			  loss='mean_squared_error',
+			  metrics=['mse'])
+			  
 scaler = MinMaxScaler(feature_range=(0.0, 1.0))
 fitter = StandardScaler()			  
 for mfcc, track in zip(mfccsList, trackList):
@@ -66,43 +71,49 @@ for mfcc, track in zip(mfccsList, trackList):
 
 joblib.dump(fitter, 'StandardScaler.pkl') 
 joblib.dump(scaler, 'MinMaxScaler.pkl') 
-	
+
+counter = 0	
 for mfcc, track in zip(mfccsList, trackList):
-	print(mfcc)
-	print(track)
-	mfccs = np.transpose(np.load(mfcc))
-	sixDistances = np.load(track)
-	print(len(mfccs))
-	print(sixDistances.shape)
+	if (counter < 9):
+		print(mfcc)
+		print(track)
+		mfccs = np.transpose(np.load(mfcc))
+		sixDistances = np.load(track)
+		print(len(mfccs))
+		print(sixDistances.shape)
 
-	mfcc_array = []
-	sixDistances_array = []
-	
-	mfccs = fitter.fit_transform(mfccs)
-	sixDistances = scaler.fit_transform(sixDistances)
-	
-	for i in range(30, len(sixDistances)-1):
-		sample_mfcc = mfccs[i-sequence_length:i]
-		sample_sixDistances = sixDistances[i]
-		mfcc_array.append(sample_mfcc)
-		sixDistances_array.append(sample_sixDistances)
+		mfcc_array = []
+		sixDistances_array = []
+		
+		mfccs = fitter.fit_transform(mfccs)
+		sixDistances = scaler.fit_transform(sixDistances)
+		
+		for i in range(30, len(sixDistances)-1):
+			sample_mfcc = mfccs[i-sequence_length:i]
+			sample_sixDistances = sixDistances[i]
+			mfcc_array.append(sample_mfcc)
+			sixDistances_array.append(sample_sixDistances)
 
-	real_mfcc_array = np.asarray(mfcc_array, dtype=np.float32)
-	real_sixDistances_array = np.asarray(sixDistances_array, dtype=np.float32)
+		real_mfcc_array = np.asarray(mfcc_array, dtype=np.float32)
+		real_sixDistances_array = np.asarray(sixDistances_array, dtype=np.float32)
 
-	index = np.shape(real_sixDistances_array)[0]
-	crossValidation = index-500
-	testingSet = index-300
+		index = np.shape(real_sixDistances_array)[0]
+		crossValidation = index-500
+		testingSet = index-300
 
-	validation_data = (real_mfcc_array[crossValidation:testingSet], real_sixDistances_array[crossValidation:testingSet])
-	print(real_mfcc_array[crossValidation:testingSet])
-	history = model.fit(x=real_mfcc_array[0:crossValidation],
-						y=real_sixDistances_array[0:crossValidation],
-						epochs=500,
-						batch_size=10,
-						validation_data=validation_data)
-						
-	model.save("10_03_LSTM_Regression_Model_retest.keras")
+		validation_data = (real_mfcc_array[crossValidation:testingSet], real_sixDistances_array[crossValidation:testingSet])
+		print(real_mfcc_array[crossValidation:testingSet])
+		history = pmodel.fit(x=real_mfcc_array[0:crossValidation],
+							y=real_sixDistances_array[0:crossValidation],
+							epochs=500,
+							batch_size=40,
+							validation_data=validation_data)
+							
+		model.save("10_09_LSTM_Regression_Model_retest.keras")
 
-	#score = model.predict(x=real_mfcc_array[crossValidation:testingSet,:])
-	#np.save('score.npy', score)
+	else:
+		score = model.predict(x=real_mfcc_array)
+		scorepath = "score_" + track
+		np.save(scorepath, score)
+		
+	counter += 1
