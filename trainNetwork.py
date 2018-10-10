@@ -24,6 +24,8 @@ from tensorflow.python.keras.utils import multi_gpu_model
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from itertools import chain
 
+import horovod.keras as hvd
+
 mfccsList = []
 trackList = []
 
@@ -49,18 +51,41 @@ predictions = (Dense(6, activation="linear", name="predictions", input_shape=(13
 
 # Use the Adam method for training the network.
 # We want to find the best learning-rate for the Adam method.
-optimizer = Adam(lr=1e-3)
+optimizer = Adam(lr=1e-4)
 model = Model(inputs=[input_first], outputs=predictions)    
 # model = load_model('09_12_LSTM_Regression_Model')
 # In Keras we need to compile the model so it can be trained.
+#model.compile(optimizer=optimizer,
+#			  loss='mean_squared_error',
+#			  metrics=['mse'])
+
+
+# Horovod: initialize Horovod.
+hvd.init()
+
+# Horovod: pin GPU to be used to process local rank (one GPU per process)
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+config.gpu_options.visible_device_list = str(hvd.local_rank())
+K.set_session(tf.Session(config=config))
+
+optimizer = hvd.DistributedOptimizer(optimizer)
+
 model.compile(optimizer=optimizer,
-			  loss='mean_squared_error',
-			  metrics=['mse'])
-			  
-pmodel = multi_gpu_model(model, gpus=4)
-pmodel.compile(optimizer=optimizer,
-			  loss='mean_squared_error',
-			  metrics=['mse'])
+	loss='mean_squared_error',
+	metrics=['mse'])	
+
+callbacks = [
+	# Horovod: broadcast initial variable states from rank 0 to all other processes.
+	# This is necessary to ensure consistent initialization of all workers when
+	# training is started with random weights or restored from a checkpoint.
+	hvd.callbacks.BroadcastGlobalVariablesCallback(0)
+]
+	
+#pmodel = multi_gpu_model(model, gpus=4)
+#pmodel.compile(optimizer=optimizer,
+#			  loss='mean_squared_error',
+#			  metrics=['mse'])
 			  
 scaler = MinMaxScaler(feature_range=(0.0, 1.0))
 fitter = StandardScaler()
@@ -108,14 +133,15 @@ for mfcc, track in zip(mfccsList, trackList):
 
 		validation_data = (real_mfcc_array[crossValidation:testingSet], real_sixDistances_array[crossValidation:testingSet])
 		print(real_mfcc_array[crossValidation:testingSet])
-		history = pmodel.fit(x=real_mfcc_array[0:crossValidation],
+		history = model.fit(x=real_mfcc_array[0:crossValidation],
 							y=real_sixDistances_array[0:crossValidation],
-							epochs=20000,
-							batch_size=2048,
+							epochs=1500,
+							batch_size=512,
 							validation_data=validation_data)
 		
 
 		path_best_model = '{}/10_10_LSTM_Regression_Model_SAIL_SPEECH.keras'.format(homepath)
-		model.save(path_best_model)
+		if hvd.rank() == 0:
+			model.save(path_best_model)
 		
 	counter += 1
