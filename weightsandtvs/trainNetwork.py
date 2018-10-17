@@ -44,7 +44,7 @@ for root, dirs, files in chain.from_iterable(os.walk(path) for path in paths):
 				mfccsList.append(path)
 						
 input_first = (Input(shape=(sequence_length, 10), name='mfccInput'))
-input_next = CuDNNLSTM(10, input_shape=(sequence_length, 10), return_sequences=True, name="LSTM_aggregation2")(input_next)
+input_next = CuDNNLSTM(10, input_shape=(sequence_length, 10), return_sequences=True, name="LSTM_aggregation2")(input_first)
 input_next = CuDNNLSTM(10, input_shape=(sequence_length, 10), return_sequences=False, name="LSTM_aggregation3")(input_next)
 predictions = (Dense(6, activation="linear", name="predictions", input_shape=(10,)))(input_next)
 
