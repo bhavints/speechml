@@ -92,7 +92,7 @@ real_sixDistances_array = np.asarray(sixDistances_array, dtype=np.float32)
 index = np.shape(real_sixDistances_array)[0]
 
 # Make predictions, scale them, and convert to mm along with ground truth
-score = model.predict(x=real_mfcc_array)
+score = model.predict(x=real_mfcc_array[index-30000:index])
 score = scaler.inverse_transform(score)
 
 sumErrors = np.zeros(shape=(1, 6));
