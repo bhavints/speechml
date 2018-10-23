@@ -1,6 +1,6 @@
 files = dir('*.mat');
 s = struct();
-for k = 2:length(files)
+for k = 1:length(files)
     [p, f] = fileparts(files(k).name);
     contourData = get_tvs_from_trackfile(files(k).name);
     sequencelength = size(contourData.tv{1}.cd, 1);

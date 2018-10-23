@@ -41,8 +41,8 @@ function [X,Y,Xul,Yul,Xll,Yll,Xtongue,Ytongue,Xalveolar,...
     Ypalatal =  Y(ismember(contourdata.SectionsID,11));
     Xvelum = X(ismember(contourdata.SectionsID,12));
     Yvelum = Y(ismember(contourdata.SectionsID,12));
-    Xphar = X(ismember(contourdata.SectionsID,7));
-    Yphar = Y(ismember(contourdata.SectionsID,7));
+    Xphar = X(ismember(contourdata.SectionsID,[7 8]));
+    Yphar = Y(ismember(contourdata.SectionsID,[7 8]));
     Xalveolar = interp1(Xalveolar,1:ds:length(Xalveolar));
     Yalveolar = interp1(Yalveolar,1:ds:length(Yalveolar));
     Xpalatal = interp1(Xpalatal,1:ds:length(Xpalatal));
