@@ -1,5 +1,5 @@
-
-for i = 1:13
-    a = s.(fields{i});
-    csvwrite(strcat(fields{i}, ".csv"),a);
+fns = fieldnames(s);
+for i = 1:14
+    a = s.(fns{i});
+    csvwrite(strcat(fns{i}, ".csv"),a);
 end

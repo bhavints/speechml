@@ -3,7 +3,7 @@ import pandas as panda
 import numpy as np
 import os
 
-for root, dirs, files in os.walk("weightsandtvs"):
+for root, dirs, files in os.walk("csvs"):
 	for file in files:
 		if (file.endswith(".csv")):
 			path = os.path.join(root, file)
