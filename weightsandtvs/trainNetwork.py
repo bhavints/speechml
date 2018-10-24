@@ -54,23 +54,24 @@ optimizer = Adam(lr=1e-4)
 model = Model(inputs=[input_first], outputs=predictions)    
 # model = load_model('09_12_LSTM_Regression_Model')
 # In Keras we need to compile the model so it can be trained.
-#model.compile(optimizer=optimizer,
-#			  loss='mean_squared_error',
-#			  metrics=['mse'])
+pmodel = multi_gpu_model(model, gpus=4)
+pmodel.compile(optimizer=optimizer,
+			  loss='mean_squared_error',
+			  metrics=['mse'])
 
 
 # Horovod: initialize Horovod.
-hvd.init()
+#hvd.init()
 
 # Horovod: pin GPU to be used to process local rank (one GPU per process)
-config = tf.ConfigProto()
-config.gpu_options.allow_growth = True
-config.gpu_options.visible_device_list = str(hvd.local_rank())
-K.set_session(tf.Session(config=config))
+#config = tf.ConfigProto()
+#config.gpu_options.allow_growth = True
+#config.gpu_options.visible_device_list = str(hvd.local_rank())
+#K.set_session(tf.Session(config=config))
 
-optimizer = hvd.DistributedOptimizer(optimizer)
+#optimizer = hvd.DistributedOptimizer(optimizer)
 
-model.compile(optimizer=optimizer,
+pmodel.compile(optimizer=optimizer,
 	loss='mean_squared_error',
 	metrics=['mse'])	
 
@@ -105,7 +106,7 @@ counter = 0
 for mfcc, track in zip(mfccsList, trackList):
 	print(mfcc)
 	print(track)
-	mfccs = np.transpose(np.load(mfcc))
+	mfccs = (np.load(mfcc))
 	sixDistances = np.load(track)
 	print(len(mfccs))
 	print(sixDistances.shape)
@@ -132,15 +133,15 @@ for mfcc, track in zip(mfccsList, trackList):
 
 		validation_data = (real_mfcc_array[crossValidation:testingSet], real_sixDistances_array[crossValidation:testingSet])
 		print(real_mfcc_array[crossValidation:testingSet])
-		history = model.fit(x=real_mfcc_array[0:crossValidation],
+		history = pmodel.fit(x=real_mfcc_array[0:crossValidation],
 							y=real_sixDistances_array[0:crossValidation],
-							epochs=1500,
-							batch_size=512,
+							epochs=1000,
+							batch_size=1024,
 							validation_data=validation_data)
 		
 
 		path_best_model = '{}/10_17_tvweights_LSTM_Regression_Model_SAIL_SPEECH.keras'.format(homepath)
-		if hvd.rank() == 0:
-			model.save(path_best_model)
+		#if hvd.rank() == 0:
+		model.save(path_best_model)
 		
 	counter += 1
