@@ -77,8 +77,8 @@ print(sixDistances.shape)
 mfcc_array = []
 sixDistances_array = []
 
-fitter = joblib.load('10_10_StandardScaler.pkl') 
-scaler = joblib.load('10_10_MinMaxScaler.pkl') 
+fitter = joblib.load('{}/10_10_StandardScaler.pkl'.format(homepath)) 
+scaler = joblib.load('{}/10_10_MinMaxScaler.pkl'.format(homepath) 
 
 mfccs = fitter.fit_transform(mfccs)
 #sixDistances = scaler.fit_transform(sixDistances)
@@ -105,13 +105,14 @@ for i in range(len(score)):
 	for j in range(6):
 		sumErrors[0][j] += square(score[i][j] - real_sixDistances_array[i][j])
 
+print('ERROR FOR 9', file=open("errors.txt", "a"))
 for k in range(6):
 	sumErrors[0][k] /= len(score)
 	sumErrors[0][k] = sqrt(sumErrors[0][k])
-	print('error {}: {}'.format(k, sumErrors[0][k]))
+	print('error {}: {}'.format(k, sumErrors[0][k]), file=open("errors.txt", "a"))
 	
 #print(score[0][29])
-plt.plot(score[:,0])
-plt.plot(real_sixDistances_array[:,0])
+plt.plot(score[0:500,0])
+plt.plot(real_sixDistances_array[0:500,0])
 plt.legend(['Model score', 'Ground Truth'], loc='upper left')
-plt.savefig("results_track_9_of_10.png")
+plt.savefig("results_track_9_of_10_normalized_500.png")

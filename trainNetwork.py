@@ -128,19 +128,19 @@ for mfcc, track in zip(mfccsList, trackList):
 
 	if (counter < 9):
 		index = np.shape(real_sixDistances_array)[0]
-		crossValidation = index-1000
+		crossValidation = index-500
 		testingSet = index
 
 		validation_data = (real_mfcc_array[crossValidation:testingSet], real_sixDistances_array[crossValidation:testingSet])
 		print(real_mfcc_array[crossValidation:testingSet])
 		history = model.fit(x=real_mfcc_array[0:crossValidation],
 							y=real_sixDistances_array[0:crossValidation],
-							epochs=1500,
-							batch_size=512,
+							epochs=31250,
+							batch_size=2048,
 							validation_data=validation_data)
 		
 
-		path_best_model = '{}/10_10_LSTM_Regression_Model_SAIL_SPEECH.keras'.format(homepath)
+		path_best_model = '{}/10_10_LSTM_Regression_Model_SAIL_SPEECH_1M.keras'.format(homepath)
 		if hvd.rank() == 0:
 			model.save(path_best_model)
 		
