@@ -33,7 +33,7 @@ sequence_length = 30
 	
 for dataset in os.listdir("csvs"):
 	data_dir = 'csvs/{}'.format(dataset)
-    data_files = os.listdir(data_dir)
+	data_files = os.listdir(data_dir)
 	for file in sorted(data_files):
 		if (file.endswith(".npy")):
 			path = os.path.join(root, file)
@@ -41,7 +41,7 @@ for dataset in os.listdir("csvs"):
 
 for dataset in os.listdir("mfccs"):
 	data_dir = 'mfccs/{}'.format(dataset)
-    data_files = os.listdir(data_dir)
+	data_files = os.listdir(data_dir)
 	for file in sorted(data_files):
 		if (file.endswith(".npy")):
 			path = os.path.join(root, file)
