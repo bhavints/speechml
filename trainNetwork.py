@@ -113,16 +113,23 @@ for mfcc, track in zip(mfccsList, trackList):
 	print(real_sixDistances_array.shape)
 
 	mfcc_array = []
+	sixDistances = []
 	
 	mfccs = fitter.fit_transform(mfccs)
 	real_sixDistances_array = scaler.fit_transform(real_sixDistances_array)
 	
-	for i in range(sequence_length, len(mfccs)):
-		sample_mfcc = mfccs[i-sequence_length:i]
-		mfcc_array.append(sample_mfcc)
+	for i in range(len(mfccs)):
+		if (i > sequence_length-1):
+			
+			sample_mfcc = mfccs[i-sequence_length:i]
+			mfcc_array.append(sample_mfcc)
+			
+			sixDistances.append(real_sixDistances_array[i])
 
+	
 	real_mfcc_array = np.asarray(mfcc_array, dtype=np.float32)
-
+	real_sixDistances_array = np.asarray(sixDistances, dtype=np.float32)
+	
 	index = np.shape(real_sixDistances_array)[0]
 	crossValidation = index-500
 	testingSet = index
