@@ -97,51 +97,43 @@ for mfcc, track in zip(mfccsList, trackList):
 	scaler.partial_fit(sixDistances)
 
 homepath = os.environ["HOME"]
-path_stdscaler = '{}/10_10_StandardScaler.pkl'.format(homepath)
-path_mmscaler = '{}/10_10_MinMaxScaler.pkl'.format(homepath)
+path_stdscaler = '{}/11_7_StandardScaler.pkl'.format(homepath)
+path_mmscaler = '{}/11_7_MinMaxScaler.pkl'.format(homepath)
 joblib.dump(fitter, path_stdscaler) 
 joblib.dump(scaler, path_mmscaler) 
 
-counter = 0	
 for mfcc, track in zip(mfccsList, trackList):
 	print(mfcc)
 	print(track)
 	mfccs = np.transpose(np.load(mfcc))
-	sixDistances = np.load(track)
+	real_sixDistances_array = np.load(track)
 	print(len(mfccs))
-	print(sixDistances.shape)
+	print(real_sixDistances_array.shape)
 
 	mfcc_array = []
-	sixDistances_array = []
 	
 	mfccs = fitter.fit_transform(mfccs)
-	sixDistances = scaler.fit_transform(sixDistances)
+	real_sixDistances_array = scaler.fit_transform(real_sixDistances_array)
 	
-	for i in range(30, len(sixDistances)-1):
+	for i in range(sequence_length, len(mfccs)):
 		sample_mfcc = mfccs[i-sequence_length:i]
-		sample_sixDistances = sixDistances[i]
 		mfcc_array.append(sample_mfcc)
-		sixDistances_array.append(sample_sixDistances)
 
 	real_mfcc_array = np.asarray(mfcc_array, dtype=np.float32)
 	real_sixDistances_array = np.asarray(sixDistances_array, dtype=np.float32)
 
-	if (counter < 9):
-		index = np.shape(real_sixDistances_array)[0]
-		crossValidation = index-500
-		testingSet = index
+	index = np.shape(real_sixDistances_array)[0]
+	crossValidation = index-500
+	testingSet = index
 
-		validation_data = (real_mfcc_array[crossValidation:testingSet], real_sixDistances_array[crossValidation:testingSet])
-		print(real_mfcc_array[crossValidation:testingSet])
-		history = model.fit(x=real_mfcc_array[0:crossValidation],
-							y=real_sixDistances_array[0:crossValidation],
-							epochs=31250,
-							batch_size=2048,
-							validation_data=validation_data)
-		
-
-		path_best_model = '{}/11_7_LSTM_Regression_Model_SAIL_SPEECH_1M.keras'.format(homepath)
-		if hvd.rank() == 0:
-			model.save(path_best_model)
-		
-	counter += 1
+	validation_data = (real_mfcc_array[crossValidation:testingSet], real_sixDistances_array[crossValidation:testingSet])
+	print(real_mfcc_array[crossValidation:testingSet])
+	history = model.fit(x=real_mfcc_array[0:crossValidation],
+						y=real_sixDistances_array[0:crossValidation],
+						epochs=5000,
+						batch_size=2048,
+						validation_data=validation_data)
+	
+	path_best_model = '{}/11_7_LSTM_Regression_Model_SAIL_SPEECH_1M.keras'.format(homepath)
+	if hvd.rank() == 0:
+		model.save(path_best_model)
