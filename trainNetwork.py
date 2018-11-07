@@ -91,12 +91,14 @@ callbacks = [
 			  
 scaler = MinMaxScaler(feature_range=(0.0, 1.0))
 fitter = StandardScaler()
-			  
+			
+counter = 0			
 for mfcc, track in zip(mfccsList, trackList):
 	mfccs = np.transpose(np.load(mfcc))
 	sixDistances = np.load(track)
 	fitter.partial_fit(mfccs)
 	scaler.partial_fit(sixDistances)
+	counter += 1
 
 homepath = os.environ["HOME"]
 path_stdscaler = '{}/11_7_StandardScaler.pkl'.format(homepath)
@@ -104,44 +106,49 @@ path_mmscaler = '{}/11_7_MinMaxScaler.pkl'.format(homepath)
 joblib.dump(fitter, path_stdscaler) 
 joblib.dump(scaler, path_mmscaler) 
 
+index = 0
 for mfcc, track in zip(mfccsList, trackList):
-	print(mfcc)
-	print(track)
-	mfccs = np.transpose(np.load(mfcc))
-	real_sixDistances_array = np.load(track)
-	print(len(mfccs))
-	print(real_sixDistances_array.shape)
+	
+	if (index < counter - 3):
+		print(mfcc)
+		print(track)
+		mfccs = np.transpose(np.load(mfcc))
+		real_sixDistances_array = np.load(track)
+		print(len(mfccs))
+		print(real_sixDistances_array.shape)
 
-	mfcc_array = []
-	sixDistances = []
-	
-	mfccs = fitter.fit_transform(mfccs)
-	real_sixDistances_array = scaler.fit_transform(real_sixDistances_array)
-	
-	for i in range(len(real_sixDistances_array)):
-		if (i > sequence_length-1):
-			
-			sample_mfcc = mfccs[i-sequence_length:i]
-			mfcc_array.append(sample_mfcc)
-			
-			sixDistances.append(real_sixDistances_array[i])
+		mfcc_array = []
+		sixDistances = []
+		
+		mfccs = fitter.fit_transform(mfccs)
+		real_sixDistances_array = scaler.fit_transform(real_sixDistances_array)
+		
+		for i in range(len(real_sixDistances_array)):
+			if (i > sequence_length-1):
+				
+				sample_mfcc = mfccs[i-sequence_length:i]
+				mfcc_array.append(sample_mfcc)
+				
+				sixDistances.append(real_sixDistances_array[i])
 
-	
-	real_mfcc_array = np.asarray(mfcc_array, dtype=np.float32)
-	real_sixDistances_array = np.asarray(sixDistances, dtype=np.float32)
-	
-	index = np.shape(real_sixDistances_array)[0]
-	crossValidation = index-500
-	testingSet = index
+		
+		real_mfcc_array = np.asarray(mfcc_array, dtype=np.float32)
+		real_sixDistances_array = np.asarray(sixDistances, dtype=np.float32)
+		
+		index = np.shape(real_sixDistances_array)[0]
+		crossValidation = index-500
+		testingSet = index
 
-	validation_data = (real_mfcc_array[crossValidation:testingSet], real_sixDistances_array[crossValidation:testingSet])
-	print(real_mfcc_array[crossValidation:testingSet])
-	history = model.fit(x=real_mfcc_array[0:crossValidation],
-						y=real_sixDistances_array[0:crossValidation],
-						epochs=5000,
-						batch_size=2048,
-						validation_data=validation_data)
-	
-	path_best_model = '{}/11_7_LSTM_Regression_Model_SAIL_SPEECH_1M.keras'.format(homepath)
-	if hvd.rank() == 0:
-		model.save(path_best_model)
+		validation_data = (real_mfcc_array[crossValidation:testingSet], real_sixDistances_array[crossValidation:testingSet])
+		print(real_mfcc_array[crossValidation:testingSet])
+		history = model.fit(x=real_mfcc_array[0:crossValidation],
+							y=real_sixDistances_array[0:crossValidation],
+							epochs=31250,
+							batch_size=2048,
+							validation_data=validation_data)
+		
+		path_best_model = '{}/11_7_LSTM_Regression_Model_SAIL_SPEECH_1M.keras'.format(homepath)
+		if hvd.rank() == 0:
+			model.save(path_best_model)
+
+	index += 1
