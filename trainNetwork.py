@@ -118,7 +118,7 @@ for mfcc, track in zip(mfccsList, trackList):
 	mfccs = fitter.fit_transform(mfccs)
 	real_sixDistances_array = scaler.fit_transform(real_sixDistances_array)
 	
-	for i in range(len(mfccs)):
+	for i in range(len(real_sixDistances_array)):
 		if (i > sequence_length-1):
 			
 			sample_mfcc = mfccs[i-sequence_length:i]
