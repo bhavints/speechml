@@ -140,7 +140,7 @@ for mfcc, track in zip(mfccsList, trackList):
 							validation_data=validation_data)
 		
 
-		path_best_model = '{}/10_10_LSTM_Regression_Model_SAIL_SPEECH_1M.keras'.format(homepath)
+		path_best_model = '{}/11_7_LSTM_Regression_Model_SAIL_SPEECH_1M.keras'.format(homepath)
 		if hvd.rank() == 0:
 			model.save(path_best_model)
 		

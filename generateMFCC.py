@@ -2,7 +2,7 @@ import librosa
 import numpy as np
 import os
 
-path = r"B:\ownCloud\usc_vtsf_m1\2D\wav"
+path = "wavs/eh"
 
 for root, dirs, files in os.walk(path):
 	for filename in sorted(files):
