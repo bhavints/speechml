@@ -106,10 +106,10 @@ path_mmscaler = '{}/11_7_MinMaxScaler.pkl'.format(homepath)
 joblib.dump(fitter, path_stdscaler) 
 joblib.dump(scaler, path_mmscaler) 
 
-index = 0
+fileIndex = 0
 for mfcc, track in zip(mfccsList, trackList):
 	
-	if (index < counter - 3):
+	if (fileIndex < counter - 3):
 		print(mfcc)
 		print(track)
 		mfccs = np.transpose(np.load(mfcc))
@@ -151,4 +151,4 @@ for mfcc, track in zip(mfccsList, trackList):
 		if hvd.rank() == 0:
 			model.save(path_best_model)
 
-	index += 1
+	fileIndex += 1
