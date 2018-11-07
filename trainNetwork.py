@@ -122,7 +122,6 @@ for mfcc, track in zip(mfccsList, trackList):
 		mfcc_array.append(sample_mfcc)
 
 	real_mfcc_array = np.asarray(mfcc_array, dtype=np.float32)
-	real_sixDistances_array = np.asarray(sixDistances_array, dtype=np.float32)
 
 	index = np.shape(real_sixDistances_array)[0]
 	crossValidation = index-500
