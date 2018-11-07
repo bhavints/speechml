@@ -24,7 +24,6 @@ from tensorflow.python.keras.utils import multi_gpu_model
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from itertools import chain
 
-import horovod.keras as hvd
 
 mfccsList = []
 trackList = []
@@ -64,27 +63,9 @@ scaler = joblib.load(path_mmscaler)
 path_best_model = '{}/11_7_LSTM_Regression_Model_SAIL_SPEECH_1M.keras'.format(homepath)  
 model = load_model(path_best_model)
 
-# Horovod: initialize Horovod.
-hvd.init()
-
-# Horovod: pin GPU to be used to process local rank (one GPU per process)
-config = tf.ConfigProto()
-config.gpu_options.allow_growth = True
-config.gpu_options.visible_device_list = str(hvd.local_rank())
-K.set_session(tf.Session(config=config))
-
-optimizer = hvd.DistributedOptimizer(optimizer)
-
 model.compile(optimizer=optimizer,
 	loss='mean_squared_error',
 	metrics=['mse'])	
-
-callbacks = [
-	# Horovod: broadcast initial variable states from rank 0 to all other processes.
-	# This is necessary to ensure consistent initialization of all workers when
-	# training is started with random weights or restored from a checkpoint.
-	hvd.callbacks.BroadcastGlobalVariablesCallback(0)
-]
 		  		
 counter = 0			
 for mfcc, track in zip(mfccsList, trackList):
