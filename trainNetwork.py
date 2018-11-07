@@ -29,21 +29,24 @@ import horovod.keras as hvd
 mfccsList = []
 trackList = []
 
-paths = ["csvs", "mfccs"]
 sequence_length = 30
 	
-for root, dirs, files in chain.from_iterable(os.walk(path) for path in paths):
-	for file in sorted(files):
-		print(file)
+for dataset in os.listdir("csvs"):
+	data_dir = 'csvs/{}'.format(dataset)
+    data_files = os.listdir(data_dir)
+	for file in sorted(data_files):
 		if (file.endswith(".npy")):
 			path = os.path.join(root, file)
-			if (root == "csvs") :
-				print(path)
-				trackList.append(path)
-			elif (root == "mfccs") :
-				print(path)
-				mfccsList.append(path)
-						
+			trackList.append(os.path.join(data_dir, file))
+
+for dataset in os.listdir("mfccs"):
+	data_dir = 'mfccs/{}'.format(dataset)
+    data_files = os.listdir(data_dir)
+	for file in sorted(data_files):
+		if (file.endswith(".npy")):
+			path = os.path.join(root, file)
+			mfccsList.append(os.path.join(data_dir, file))
+			
 input_first = (Input(shape=(sequence_length, 13), name='mfccInput'))
 input_next = CuDNNLSTM(13, input_shape=(sequence_length, 13), return_sequences=True, name="LSTM_aggregation")(input_first)
 input_next = CuDNNLSTM(13, input_shape=(sequence_length, 13), return_sequences=True, name="LSTM_aggregation2")(input_next)
