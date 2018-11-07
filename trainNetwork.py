@@ -34,6 +34,7 @@ sequence_length = 30
 	
 for root, dirs, files in chain.from_iterable(os.walk(path) for path in paths):
 	for file in sorted(files):
+		print(file)
 		if (file.endswith(".npy")):
 			path = os.path.join(root, file)
 			if (root == "csvs") :
