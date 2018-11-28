@@ -60,7 +60,7 @@ path_mmscaler = '{}/11_28_MinMaxScaler.pkl'.format(homepath)
 fitter = joblib.load(path_stdscaler) 
 scaler = joblib.load(path_mmscaler)
 
-path_best_model = '{}/11_28_Regression_Model_SAIL_SPEECH_1M.keras'.format(homepath)  
+path_best_model = '{}/11_28_LSTM_Regression_Model_SAIL_SPEECH_1M.keras'.format(homepath)  
 model = load_model(path_best_model)
 
 model.compile(optimizer=optimizer,
