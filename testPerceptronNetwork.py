@@ -106,6 +106,6 @@ for mfcc, track in zip(mfccsList, trackList):
 				plt.plot(real_sixDistances_array[i-1000:i][j])
 				plt.legend(['Model score', 'Ground Truth'], loc='upper left')
 				plt.savefig('perceptron_results_track_{}_constriction_{}_normalized_{}.png'.format(fileIndex, j, i))
-				plt.clear()
+				plt.clf()
 
 	fileIndex += 1
