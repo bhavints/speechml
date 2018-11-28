@@ -24,6 +24,9 @@ from tensorflow.python.keras.utils import multi_gpu_model
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from itertools import chain
 	
+mfccsList = []
+trackList = []
+
 for dataset in sorted(os.listdir("csvs")):
 	data_dir = 'csvs/{}'.format(dataset)
 	data_files = os.listdir(data_dir)
