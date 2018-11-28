@@ -1,0 +1,24 @@
+#!/bin/bash
+
+#SBATCH -J horovodjob           # Job name
+#SBATCH -o speechml.o%j       # Name of stdout output file
+#SBATCH -e speechml.e%j       # Name of stderr error file
+#SBATCH -p gtx          # Queue (partition) name
+#SBATCH -N 4               # Total # of nodes 
+#SBATCH -n 16              # Total # of mpi tasks
+#SBATCH -t 24:00:00        # Run time (hh:mm:ss)
+#SBATCH --mail-user=bhavints@usc.edu
+#SBATCH --mail-type=all    # Send email at begin and end of job
+#SBATCH -A MarsImaging       # Allocation name (req'd if you have more than 1)
+
+# Other commands must follow all #SBATCH directives...
+
+cd $WORK/speechml
+module load cuda/9.0 cudnn/7.0 python3
+
+# Launch MPI code... 
+
+scontrol show hostnames $SLURM_NODELIST > hostfile
+mpiexec.hydra -f hostfile -np 16 -ppn 4 python3 -u trainNetwork.py
+
+# ---------------------------------------------------
