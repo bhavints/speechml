@@ -123,7 +123,7 @@ for mfcc, track in zip(mfccsList, trackList):
 
 		history = model.fit(x=real_mfcc_array[0:crossValidation],
 							y=real_sixDistances_array[0:crossValidation],
-							epochs=31250,
+							epochs=62500,
 							batch_size=2048,
 							validation_data=validation_data)
 		

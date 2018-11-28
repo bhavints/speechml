@@ -100,10 +100,12 @@ for mfcc, track in zip(mfccsList, trackList):
 			print('error {}: {}'.format(k, sumErrors[0][k]), file=open("perceptronerrors.txt", "a"))
 		
 		for i in range(1000, len(score), 1000) :
-			#print(score[0][29])
-			plt.plot(score[i-1000:i])
-			plt.plot(real_sixDistances_array[i-1000:i])
-			plt.legend(['Model score', 'Ground Truth'], loc='upper left')
-			plt.savefig('perceptron_results_track_{}_of_10_normalized_{}.png'.format(fileIndex, i))
+			for j in range(6):
+				#print(score[0][29])
+				plt.plot(score[i-1000:i][j])
+				plt.plot(real_sixDistances_array[i-1000:i][j])
+				plt.legend(['Model score', 'Ground Truth'], loc='upper left')
+				plt.savefig('perceptron_results_track_{}_constriction_{}_normalized_{}.png'.format(fileIndex, j, i))
+				plt.clear()
 
 	fileIndex += 1
