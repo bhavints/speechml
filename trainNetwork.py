@@ -31,14 +31,14 @@ trackList = []
 
 sequence_length = 30
 	
-for dataset in os.listdir("csvs"):
+for dataset in sorted(os.listdir("csvs")):
 	data_dir = 'csvs/{}'.format(dataset)
 	data_files = os.listdir(data_dir)
 	for file in sorted(data_files):
 		if (file.endswith(".npy")):
 			trackList.append(os.path.join(data_dir, file))
 
-for dataset in os.listdir("mfccs"):
+for dataset in sorted(os.listdir("mfccs")):
 	data_dir = 'mfccs/{}'.format(dataset)
 	data_files = os.listdir(data_dir)
 	for file in sorted(data_files):
@@ -143,7 +143,7 @@ for mfcc, track in zip(mfccsList, trackList):
 		print(real_mfcc_array[crossValidation:testingSet])
 		history = model.fit(x=real_mfcc_array[0:crossValidation],
 							y=real_sixDistances_array[0:crossValidation],
-							epochs=31250,
+							epochs=500,
 							batch_size=2048,
 							validation_data=validation_data)
 		
