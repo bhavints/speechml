@@ -36,6 +36,7 @@ for dataset in sorted(os.listdir("csvs")):
 	data_files = os.listdir(data_dir)
 	for file in sorted(data_files):
 		if (file.endswith(".npy")):
+			print(file)
 			trackList.append(os.path.join(data_dir, file))
 
 for dataset in sorted(os.listdir("mfccs")):
@@ -43,6 +44,7 @@ for dataset in sorted(os.listdir("mfccs")):
 	data_files = os.listdir(data_dir)
 	for file in sorted(data_files):
 		if (file.endswith(".npy")):
+			print(file)
 			mfccsList.append(os.path.join(data_dir, file))
 			
 input_first = (Input(shape=(sequence_length, 13), name='mfccInput'))
