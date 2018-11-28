@@ -89,7 +89,7 @@ for mfcc, track in zip(mfccsList, trackList):
 		real_sixDistances_array *= 2.4
 
 		sumErrors = np.zeros(shape=(1, 6));
-		for i in range(len(score)):
+		for i in range(len(real_sixDistances_array)):
 			for j in range(6):
 				sumErrors[0][j] += square(score[i][j] - real_sixDistances_array[i][j])
 
