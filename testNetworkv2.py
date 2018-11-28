@@ -30,14 +30,14 @@ trackList = []
 
 sequence_length = 30
 	
-for dataset in os.listdir("csvs"):
+for dataset in sorted(os.listdir("csvs")):
 	data_dir = 'csvs/{}'.format(dataset)
 	data_files = os.listdir(data_dir)
 	for file in sorted(data_files):
 		if (file.endswith(".npy")):
 			trackList.append(os.path.join(data_dir, file))
 
-for dataset in os.listdir("mfccs"):
+for dataset in sorted(os.listdir("mfccs")):
 	data_dir = 'mfccs/{}'.format(dataset)
 	data_files = os.listdir(data_dir)
 	for file in sorted(data_files):
@@ -55,12 +55,12 @@ predictions = (Dense(6, activation="linear", name="predictions", input_shape=(13
 optimizer = Adam(lr=1e-4)
   
 homepath = os.environ["HOME"]
-path_stdscaler = '{}/11_7_StandardScaler.pkl'.format(homepath)
-path_mmscaler = '{}/11_7_MinMaxScaler.pkl'.format(homepath)
+path_stdscaler = '{}/11_28_StandardScaler.pkl'.format(homepath)
+path_mmscaler = '{}/11_28_MinMaxScaler.pkl'.format(homepath)
 fitter = joblib.load(path_stdscaler) 
 scaler = joblib.load(path_mmscaler)
 
-path_best_model = '{}/11_7_LSTM_Regression_Model_SAIL_SPEECH_1M.keras'.format(homepath)  
+path_best_model = '{}/11_28_Regression_Model_SAIL_SPEECH_1M.keras'.format(homepath)  
 model = load_model(path_best_model)
 
 model.compile(optimizer=optimizer,
