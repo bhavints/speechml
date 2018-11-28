@@ -35,17 +35,13 @@ for dataset in sorted(os.listdir("csvs")):
 	data_dir = 'csvs/{}'.format(dataset)
 	data_files = os.listdir(data_dir)
 	for file in sorted(data_files):
-		if (file.endswith(".npy")):
-			print(file)
-			trackList.append(os.path.join(data_dir, file))
+		trackList.append(os.path.join(data_dir, file))
 
 for dataset in sorted(os.listdir("mfccs")):
 	data_dir = 'mfccs/{}'.format(dataset)
 	data_files = os.listdir(data_dir)
 	for file in sorted(data_files):
-		if (file.endswith(".npy")):
-			print(file)
-			mfccsList.append(os.path.join(data_dir, file))
+		mfccsList.append(os.path.join(data_dir, file))
 			
 input_first = (Input(shape=(sequence_length, 13), name='mfccInput'))
 input_next = CuDNNLSTM(13, input_shape=(sequence_length, 13), return_sequences=True, name="LSTM_aggregation")(input_first)
@@ -142,10 +138,10 @@ for mfcc, track in zip(mfccsList, trackList):
 		testingSet = index
 
 		validation_data = (real_mfcc_array[crossValidation:testingSet], real_sixDistances_array[crossValidation:testingSet])
-		print(real_mfcc_array[crossValidation:testingSet])
+
 		history = model.fit(x=real_mfcc_array[0:crossValidation],
 							y=real_sixDistances_array[0:crossValidation],
-							epochs=500,
+							epochs=1000,
 							batch_size=2048,
 							validation_data=validation_data)
 		
