@@ -101,8 +101,8 @@ for mfcc, track in zip(mfccsList, trackList):
 	counter += 1
 
 homepath = os.environ["HOME"]
-path_stdscaler = '{}/11_7_StandardScaler.pkl'.format(homepath)
-path_mmscaler = '{}/11_7_MinMaxScaler.pkl'.format(homepath)
+path_stdscaler = '{}/11_28_StandardScaler.pkl'.format(homepath)
+path_mmscaler = '{}/11_28_MinMaxScaler.pkl'.format(homepath)
 joblib.dump(fitter, path_stdscaler) 
 joblib.dump(scaler, path_mmscaler) 
 
@@ -147,7 +147,7 @@ for mfcc, track in zip(mfccsList, trackList):
 							batch_size=2048,
 							validation_data=validation_data)
 		
-		path_best_model = '{}/11_7_LSTM_Regression_Model_SAIL_SPEECH_1M.keras'.format(homepath)
+		path_best_model = '{}/11_28_LSTM_Regression_Model_SAIL_SPEECH_1M.keras'.format(homepath)
 		if hvd.rank() == 0:
 			model.save(path_best_model)
 
