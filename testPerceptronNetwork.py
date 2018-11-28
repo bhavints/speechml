@@ -102,7 +102,7 @@ for mfcc, track in zip(mfccsList, trackList):
 		for i in range(1000, len(score), 1000) :
 			for j in range(6):
 				#print(score[0][29])
-				print(score[i-1000:i])
+				print(score[i-1000:i][j])
 				plt.plot(score[i-1000:i][j])
 				plt.plot(real_sixDistances_array[i-1000:i][j])
 				plt.legend(['Model score', 'Ground Truth'], loc='upper left')
