@@ -91,7 +91,7 @@ for mfcc, track in zip(mfccsList, trackList):
 		for k in range(6):
 			sumErrors[0][k] /= len(score)
 			sumErrors[0][k] = sqrt(sumErrors[0][k])
-			print('error {}: {}'.format(k, sumErrors[0][k]), file=open("errors.txt", "a"))
+			print('error {}: {}'.format(k, sumErrors[0][k]), file=open("perceptronerrors.txt", "a"))
 		
 		for i in range(1000, len(score), 1000) :
 			#print(score[0][29])
