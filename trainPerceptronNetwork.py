@@ -99,8 +99,8 @@ for mfcc, track in zip(mfccsList, trackList):
 	counter += 1
 
 homepath = os.environ["HOME"]
-path_stdscaler = '{}/11_28_Perceptron_StandardScaler.pkl'.format(homepath)
-path_mmscaler = '{}/11_28_Perceptron_MinMaxScaler.pkl'.format(homepath)
+path_stdscaler = '{}/12_11_Perceptron_StandardScaler.pkl'.format(homepath)
+path_mmscaler = '{}/12_11_Perceptron_MinMaxScaler.pkl'.format(homepath)
 joblib.dump(fitter, path_stdscaler) 
 joblib.dump(scaler, path_mmscaler) 
 
@@ -123,11 +123,11 @@ for mfcc, track in zip(mfccsList, trackList):
 
 		history = model.fit(x=real_mfcc_array[0:crossValidation],
 							y=real_sixDistances_array[0:crossValidation],
-							epochs=62500,
-							batch_size=2048,
+							epochs=12500,
+							batch_size=512,
 							validation_data=validation_data)
 		
-		path_best_model = '{}/11_28_PERCEPTRON_Regression_Model_SAIL_SPEECH_1M.keras'.format(homepath)
+		path_best_model = '{}/12_11_Perceptron_Regression_Model_SAIL_SPEECH_1M.keras'.format(homepath)
 		if hvd.rank() == 0:
 			model.save(path_best_model)
 
