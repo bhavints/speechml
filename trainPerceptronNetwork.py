@@ -87,9 +87,12 @@ callbacks = [
 #			  loss='mean_squared_error',
 #			  metrics=['mse'])
 			  
-scaler = MinMaxScaler(feature_range=(0.0, 1.0))
+# Scale mfccs mean 0 and standard deviation of 1
 fitter = StandardScaler()
-			
+
+# Scale six constriction values with range 0, 1 since they are all positive
+scaler = MinMaxScaler(feature_range=(0.0, 1.0))
+		
 counter = 0			
 for mfcc, track in zip(mfccsList, trackList):
 	mfccs = np.transpose(np.load(mfcc))
