@@ -51,7 +51,7 @@ predictions = (Dense(6, activation="relu", name="predictions", input_shape=(13,)
 
 # Use the Adam method for training the network.
 # We want to find the best learning-rate for the Adam method.
-optimizer = Adam(lr=1e-4)
+optimizer = Adam(lr=1e-3)
 model = Model(inputs=[input_first], outputs=predictions)    
 # model = load_model('09_12_LSTM_Regression_Model')
 # In Keras we need to compile the model so it can be trained.
@@ -99,8 +99,8 @@ for mfcc, track in zip(mfccsList, trackList):
 	counter += 1
 
 homepath = os.environ["HOME"]
-path_stdscaler = '{}/12_11_Perceptron_StandardScaler.pkl'.format(homepath)
-path_mmscaler = '{}/12_11_Perceptron_MinMaxScaler.pkl'.format(homepath)
+path_stdscaler = '{}/1_18_Perceptron_StandardScaler.pkl'.format(homepath)
+path_mmscaler = '{}/1_18_Perceptron_MinMaxScaler.pkl'.format(homepath)
 joblib.dump(fitter, path_stdscaler) 
 joblib.dump(scaler, path_mmscaler) 
 
@@ -123,11 +123,11 @@ for mfcc, track in zip(mfccsList, trackList):
 
 		history = model.fit(x=real_mfcc_array[0:crossValidation],
 							y=real_sixDistances_array[0:crossValidation],
-							epochs=12500,
+							epochs=25000,
 							batch_size=512,
 							validation_data=validation_data)
 		
-		path_best_model = '{}/12_11_Perceptron_Regression_Model_SAIL_SPEECH_1M.keras'.format(homepath)
+		path_best_model = '{}/1_18_Perceptron_Regression_Model_SAIL_SPEECH_1M.keras'.format(homepath)
 		if hvd.rank() == 0:
 			model.save(path_best_model)
 
